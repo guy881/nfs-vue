@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '@/views/Home'
+import Hardware from '@/views/Hardware'
 
 Vue.use(Router)
 
@@ -13,22 +14,22 @@ export default new Router({
       component: Home
     },
     {
-      path: 'scans/',
+      path: '/scans/',
       name: 'scans',
       component: Home
     },
     {
-      path: 'hardware/',
+      path: '/hardware/',
       name: 'hardware',
-      component: Home
+      component: Hardware
     },
     {
-      path: 'import/',
+      path: '/import/',
       name: 'import',
       component: Home
     },
     {
-      path: 'settings/',
+      path: '/settings/',
       name: 'settings',
       component: Home
     }
