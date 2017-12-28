@@ -1,11 +1,10 @@
 <template>
   <div>
     <div class="row">
-      <div class="col-7">
+      <div class="col-12">
         <div class="card border-secondary mb-3 mt-3">
-          <div class="card-header bg-info text-white">Hardware Configuration</div>
+          <div class="card-header bg-info text-white">Spectrum analyzers</div>
           <div class="card-body">
-            <h4 class="card-title">Spectrum analyzers</h4>
             <table class="table table-hover">
               <thead>
               <tr>
@@ -14,6 +13,7 @@
                 <th scope="col">Model</th>
                 <th scope="col">Freq. range</th>
                 <th scope="col">Default</th>
+                <th scope="col">Action</th>
               </tr>
               </thead>
               <tbody>
@@ -24,18 +24,16 @@
                 <td>{{ analyzer.freq_range }}</td>
                 <!--<td><span v-bind:class="['badge', 'badge-pill', analyzer.default ? 'badge-primary' : 'badge-secondary']">{{ analyzer.default }}</span></td>-->
                 <td><i class="fas fa-check-circle ml-3 text-info" v-if="analyzer.default"></i></td>
+                <td>
+                  <router-link :to="{ name: 'analyzer', params: {id: analyzer.id} }" class="btn btn-sm btn-outline-primary">Edit</router-link>
+                  <span class="btn btn-sm btn-outline-danger ml-1" @click="deleteAnalyzer(analyzer)">Delete</span>
+                </td>
               </tr>
               </tbody>
             </table>
-          </div>
-        </div>
-      </div>
-      <div class="col-5">
-        <div class="card border-secondary mb-3 mt-3">
-          <div class="card-header ">Hardware Configuration</div>
-          <div class="card-body">
-            <h4 class="card-title">Spectrum analyzers</h4>
-
+            <div class="text-center">
+              <router-link :to="{ name: 'analyzer' }" class="btn btn-outline-success">Add analyzer</router-link>
+            </div>
           </div>
         </div>
       </div>
@@ -50,20 +48,7 @@
     name: 'Hardware',
     data: function () {
       return {
-        analyzers: [
-          {
-            name: 'My analyzer',
-            model: 'ZVL Rohde & Schwarz',
-            freq_range: '9 kHz - 3 GHz',
-            default: true
-          },
-          {
-            name: 'My analyzer 2',
-            model: 'ZVL Rohde & Schwarz',
-            freq_range: '9 kHz - 3 GHz',
-            default: false
-          }
-        ]
+        analyzers: []
       }
     },
     created: function () {
@@ -75,6 +60,11 @@
         .catch(error => {
           console.log(error)
         })
+    },
+    methods: {
+      deleteAnalyzer: function (analyzer) {
+        console.log(analyzer)
+      }
     }
   }
 </script>
