@@ -35,9 +35,8 @@
             </div>
           </div>
           <label class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" v-model="analyzer.default">
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description">Default</span>
+            <input type="checkbox" id="defaultCheckbox" class="custom-control-input" v-model="analyzer.default">
+            <label class="custom-control-label" for="defaultCheckbox">Default</label>
           </label>
           <div class="text-center">
             <button type="button" class="btn btn-outline-primary" @click="saveAnalyzer(analyzer)">Save</button>
@@ -73,7 +72,7 @@
       }
     },
     methods: {
-      saveAnalyzer: function (analyzer) {
+      saveScan: function (analyzer) {
         // this.analyzer = _.clone(analyzer)
         console.log(analyzer)
         const url = analyzer.id ? 'analyzers/' + analyzer.id : 'analyzers/'

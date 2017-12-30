@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from '@/views/Home'
+import Scanning from '@/views/Scanning'
 import Hardware from '@/views/Hardware'
 import Analyzer from '@/views/Analyzer'
 import Probe from '@/views/Probe'
@@ -13,12 +13,12 @@ export default new Router({
     {
       path: '/',
       name: 'home',
-      component: Home
+      component: Scanning
     },
     {
       path: '/scans/',
       name: 'scans',
-      component: Home
+      component: Scanning
     },
     {
       path: '/hardware/',
@@ -38,12 +38,12 @@ export default new Router({
     {
       path: '/import/',
       name: 'import',
-      component: Home
+      component: Scanning
     },
     {
       path: '/settings/',
       name: 'settings',
-      component: Home
+      component: Scanning
     }
   ],
   linkExactActiveClass: 'active'
