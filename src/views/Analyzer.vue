@@ -72,7 +72,7 @@
       }
     },
     methods: {
-      saveScan: function (analyzer) {
+      saveAnalyzer: function (analyzer) {
         // this.analyzer = _.clone(analyzer)
         console.log(analyzer)
         const url = analyzer.id ? 'analyzers/' + analyzer.id : 'analyzers/'

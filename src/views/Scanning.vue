@@ -37,18 +37,24 @@
           </div>
           <div class="form-group row">
             <label for="analyzer" class="col-sm-3 col-form-label">Spectrum analyzer</label>
-            <div class="col-sm-9">
-              <select id="analyzer" class="custom-select pr-5" v-model="scan.analyzer">
-                <option v-for="analyzer in analyzers" v-bind:value="analyzer.id">{{ analyzer.name }}</option>
-              </select>
+            <div class="col-sm-3">
+                <select id="analyzer" class="custom-select pr-5" v-model="scan.analyzer">
+                  <option v-for="analyzer in analyzers" v-bind:value="analyzer.id">{{ analyzer.name }}</option>
+                </select>
+            </div>
+            <div class="col-sm-2">
+              <small class="text-muted" v-if="scan.analyzer">{{ analyzerFreqRange }}</small>
             </div>
           </div>
           <div class="form-group row">
             <label for="probe" class="col-sm-3 col-form-label">Field probe</label>
-            <div class="col-sm-9">
+            <div class="col-sm-3">
               <select id="probe" class="custom-select pr-5" v-model="scan.probe">
                 <option v-for="probe in probes" v-bind:value="probe.id">{{ probe.name }}</option>
               </select>
+            </div>
+            <div class="col-sm-2">
+              <small class="text-muted" v-if="scan.probe">{{ probeFreqRange }}</small>
             </div>
           </div>
           <div class="form-group row no-gutters">
@@ -67,8 +73,8 @@
               </div>
             </div>
           </div>
-          <div class="text-center">
-            <button type="button" class="btn btn-outline-primary" @click="saveScan(scan)">Save</button>
+          <div class="text-center mt-5">
+            <button type="button" class="btn btn-outline-success" @click="saveScan(scan)">Start scanning</button>
           </div>
         </form>
       </div>
@@ -89,7 +95,8 @@
           printableDate: '',
           date: '',
           kind: 'flat', // default
-          analyzer: undefined
+          analyzer: undefined,  // it is very important to declare those properties! (for change detection)
+          probe: undefined
         },
         analyzers: [],
         probes: [],
@@ -99,6 +106,16 @@
           z: 'Z-variable'
         },
         errors: null
+      }
+    },
+    computed: {
+      analyzerFreqRange: function () {  // get frequency range of selected analyzer
+        const selectedAnalyzer = this.analyzers.find(analyzer => analyzer.id === this.scan.analyzer)
+        return selectedAnalyzer.freq_range
+      },
+      probeFreqRange: function () {  // get frequency range of selected field probe
+        const selectedProbe = this.probes.find(probe => probe.id === this.scan.probe)
+        return selectedProbe.freq_range
       }
     },
     created: function () {
@@ -138,9 +155,9 @@
             console.log(response)
             this.analyzers = response.data.data
             if (!this.scan.id) {  // new scan, set default analyzer
-              const defaultAnalyzers = this.analyzers.filter(analyzer => analyzer.default)
-              if (defaultAnalyzers) {
-                this.scan.analyzer = defaultAnalyzers[0].id
+              const defaultAnalyzer = this.analyzers.find(analyzer => analyzer.default)
+              if (defaultAnalyzer) {
+                this.scan.analyzer = defaultAnalyzer.id
               }
             }
           })
@@ -154,9 +171,9 @@
             console.log(response)
             this.probes = response.data.data
             if (!this.scan.id) {  // new scan, set default probe
-              const defaultProbes = this.probes.filter(probe => probe.default)
-              if (defaultProbes) {
-                this.scan.probe = defaultProbes[0].id
+              const defaultProbe = this.probes.find(probe => probe.default)
+              if (defaultProbe) {
+                this.scan.probe = defaultProbe.id
               }
             }
           })

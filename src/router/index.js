@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Scanning from '@/views/Scanning'
+import ScanHistory from '@/views/ScanHistory'
 import Hardware from '@/views/Hardware'
 import Analyzer from '@/views/Analyzer'
 import Probe from '@/views/Probe'
@@ -18,7 +19,7 @@ export default new Router({
     {
       path: '/scans/',
       name: 'scans',
-      component: Scanning
+      component: ScanHistory
     },
     {
       path: '/hardware/',
