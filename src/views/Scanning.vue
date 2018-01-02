@@ -57,19 +57,22 @@
               <small class="text-muted" v-if="scan.probe">{{ probeFreqRange }}</small>
             </div>
           </div>
-          <div class="form-group row no-gutters">
+          <div class="form-group row">
             <label class="col-sm-3 col-form-label">Frequency range</label>
-            <div class="col-sm-3 ml-2">
-              <div class="custom-control-inline">
-                <input type="number" class="form-control" id="min_frequency" v-model="scan.min_frequency">
-                <small class="ml-2 mt-2 text-muted">GHz</small>
-                <p class="mt-1 ml-3">-</p>
+            <div class="input-group col-sm-9">
+              <div class="input-group-prepend">
+                <span class="input-group-text">Min.</span>
               </div>
-            </div>
-            <div class="col-sm-3">
-              <div class="custom-control-inline">
-                <input type="number" class="form-control" id="max_frequency" v-model="scan.max_frequency">
-                <small class="ml-2 mt-2 text-muted">GHz</small>
+              <input type="number" class="form-control" id="min_frequency" v-model="scan.min_frequency">
+              <div class="input-group-append mr-5">
+                <span class="input-group-text">GHz</span>
+              </div>
+              <div class="input-group-prepend">
+                <span class="input-group-text">Max.</span>
+              </div>
+              <input type="number" class="form-control" id="max_frquency" v-model="scan.max_frequency">
+              <div class="input-group-append">
+                <span class="input-group-text">GHz</span>
               </div>
             </div>
           </div>
@@ -91,7 +94,7 @@
     data: function () {
       return {
         scan: {
-          name: 'Scan 1',
+          name: '',
           printableDate: '',
           date: '',
           kind: 'flat', // default

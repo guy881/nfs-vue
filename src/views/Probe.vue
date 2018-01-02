@@ -26,14 +26,21 @@
           </div>
           <div class="form-group row">
             <label class="col-sm-3 col-form-label">Frequency range</label>
-            <div class="col-sm-3">
+            <div class="input-group col-sm-9">
+              <div class="input-group-prepend">
+                <span class="input-group-text">Min.</span>
+              </div>
               <input type="number" class="form-control" id="min_frequency" v-model="probe.min_frequency">
-              <small class="text-muted">GHz</small>
-            </div>
-            <div class="col-sm-1">-</div>
-            <div class="col-sm-3">
-              <input type="number" class="form-control" id="max_frequency" v-model="probe.max_frequency">
-              <small class="text-muted">GHz</small>
+              <div class="input-group-append mr-5">
+                <span class="input-group-text">GHz</span>
+              </div>
+              <div class="input-group-prepend">
+                <span class="input-group-text">Max.</span>
+              </div>
+              <input type="number" class="form-control" id="max_frquency" v-model="probe.max_frequency">
+              <div class="input-group-append">
+                <span class="input-group-text">GHz</span>
+              </div>
             </div>
           </div>
           <div class="form-group row">
