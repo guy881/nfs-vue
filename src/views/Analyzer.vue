@@ -30,14 +30,18 @@
               </div>
               <input type="number" class="form-control" id="min_frequency" v-model="analyzer.min_frequency">
               <div class="input-group-append mr-5">
-                <span class="input-group-text">GHz</span>
+                <select class="custom-select" v-model="analyzer.min_frequency_unit">
+                  <option v-for="unit in freqUnits" v-bind:value="unit">{{ unit }}</option>
+                </select>
               </div>
               <div class="input-group-prepend">
                 <span class="input-group-text">Max.</span>
               </div>
               <input type="number" class="form-control" id="max_frquency" v-model="analyzer.max_frequency">
               <div class="input-group-append">
-                <span class="input-group-text">GHz</span>
+                <select class="custom-select" v-model="analyzer.max_frequency_unit">
+                  <option v-for="unit in freqUnits" v-bind:value="unit">{{ unit }}</option>
+                </select>
               </div>
             </div>
           </div>
@@ -62,8 +66,12 @@
     name: 'Analyzer',
     data: function () {
       return {
-        analyzer: {},
-        errors: null
+        analyzer: {
+          min_frequency_unit: 'GHz',
+          max_frequency_unit: 'GHz'
+        },
+        errors: null,
+        freqUnits: ['kHz', 'MHz', 'GHz']
       }
     },
     created: function () {

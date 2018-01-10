@@ -38,9 +38,9 @@
           <div class="form-group row">
             <label for="analyzer" class="col-sm-3 col-form-label">Spectrum analyzer</label>
             <div class="col-sm-3">
-                <select id="analyzer" class="custom-select pr-5" v-model="scan.analyzer">
-                  <option v-for="analyzer in analyzers" v-bind:value="analyzer.id">{{ analyzer.name }}</option>
-                </select>
+              <select id="analyzer" class="custom-select pr-5" v-model="scan.analyzer">
+                <option v-for="analyzer in analyzers" v-bind:value="analyzer.id">{{ analyzer.name }}</option>
+              </select>
             </div>
             <div class="col-sm-2">
               <small class="text-muted" v-if="scan.analyzer">{{ analyzerFreqRange }}</small>
@@ -63,16 +63,20 @@
               <div class="input-group-prepend">
                 <span class="input-group-text">Min.</span>
               </div>
-              <input type="number" class="form-control" id="min_frequency" v-model="scan.min_frequency">
+              <input type="number" class="form-control" id="min_frequency" v-model="scan.min_frequency" step="0.01">
               <div class="input-group-append mr-5">
-                <span class="input-group-text">GHz</span>
+                <select class="custom-select" v-model="scan.min_frequency_unit">
+                  <option v-for="unit in freqUnits" v-bind:value="unit">{{ unit }}</option>
+                </select>
               </div>
               <div class="input-group-prepend">
                 <span class="input-group-text">Max.</span>
               </div>
-              <input type="number" class="form-control" id="max_frquency" v-model="scan.max_frequency">
+              <input type="number" class="form-control" id="max_frquency" v-model="scan.max_frequency" step="0.01">
               <div class="input-group-append">
-                <span class="input-group-text">GHz</span>
+                <select class="custom-select" v-model="scan.max_frequency_unit">
+                  <option v-for="unit in freqUnits" v-bind:value="unit">{{ unit }}</option>
+                </select>
               </div>
             </div>
           </div>
@@ -99,7 +103,9 @@
           date: '',
           kind: 'flat', // default
           analyzer: undefined,  // it is very important to declare those properties! (for change detection)
-          probe: undefined
+          probe: undefined,
+          min_frequency_unit: 'GHz',
+          max_frequency_unit: 'GHz'
         },
         analyzers: [],
         probes: [],
@@ -108,6 +114,7 @@
           volumetric: 'Volumetric',
           z: 'Z-variable'
         },
+        freqUnits: ['kHz', 'MHz', 'GHz'],
         errors: null
       }
     },

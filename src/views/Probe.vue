@@ -32,14 +32,18 @@
               </div>
               <input type="number" class="form-control" id="min_frequency" v-model="probe.min_frequency">
               <div class="input-group-append mr-5">
-                <span class="input-group-text">GHz</span>
+                <select class="custom-select" v-model="probe.min_frequency_unit">
+                  <option v-for="unit in freqUnits" v-bind:value="unit">{{ unit }}</option>
+                </select>
               </div>
               <div class="input-group-prepend">
                 <span class="input-group-text">Max.</span>
               </div>
               <input type="number" class="form-control" id="max_frquency" v-model="probe.max_frequency">
               <div class="input-group-append">
-                <span class="input-group-text">GHz</span>
+                <select class="custom-select" v-model="probe.max_frequency_unit">
+                  <option v-for="unit in freqUnits" v-bind:value="unit">{{ unit }}</option>
+                </select>
               </div>
             </div>
           </div>
@@ -70,9 +74,13 @@
     name: 'Probe',
     data: function () {
       return {
-        probe: {},
+        probe: {
+          min_frequency_unit: 'GHz',
+          max_frequency_unit: 'GHz'
+        },
         probeKinds: {e: 'E', h: 'H'},
-        errors: null
+        errors: null,
+        freqUnits: ['kHz', 'MHz', 'GHz']
       }
     },
     created: function () {
