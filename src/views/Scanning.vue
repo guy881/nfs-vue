@@ -16,7 +16,7 @@
               <input class="form-control" id="name" v-model="scan.name">
             </div>
             <div class="col-sm-3 text-center">
-              <button type="button" class="btn btn-outline-info" @click="saveScan(scan)">Import SVG</button>
+              <button type="button" class="btn btn-outline-info" @click="saveScan(scan)">Import PCB layout</button>
             </div>
           </div>
           <div class="form-group row">
@@ -35,6 +35,69 @@
               </div>
             </div>
           </div>
+          <div v-if="scan.kind === 'flat' | scan.kind === 'volumetric'">
+            <div class="form-group row">
+              <label class="col-sm-3 col-form-label">X axis boundaries</label>
+              <div class="input-group col-sm-9">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">Min.</span>
+                </div>
+                <input type="number" class="form-control" v-model="scan.min_x" step="0.01">
+                <div class="input-group-append mr-5">
+                  <span class="input-group-text">mm</span>
+                </div>
+                <div class="input-group-prepend">
+                  <span class="input-group-text">Max.</span>
+                </div>
+                <input type="number" class="form-control" v-model="scan.max_x" step="0.01">
+                <div class="input-group-append">
+                  <span class="input-group-text">mm</span>
+                </div>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-sm-3 col-form-label">Y axis boundaries</label>
+              <div class="input-group col-sm-9">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">Min.</span>
+                </div>
+                <input type="number" class="form-control" v-model="scan.min_y" step="0.01">
+                <div class="input-group-append mr-5">
+                  <span class="input-group-text">mm</span>
+                </div>
+                <div class="input-group-prepend">
+                  <span class="input-group-text">Max.</span>
+                </div>
+                <input type="number" class="form-control" v-model="scan.max_y" step="0.01">
+                <div class="input-group-append">
+                  <span class="input-group-text">mm</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div v-if="scan.kind === 'volumetric'">
+            <div class="form-group row">
+              <label class="col-sm-3 col-form-label">Z axis boundaries</label>
+              <div class="input-group col-sm-9">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">Min.</span>
+                </div>
+                <input type="number" class="form-control" v-model="scan.min_z" step="0.01">
+                <div class="input-group-append mr-5">
+                  <span class="input-group-text">mm</span>
+                </div>
+                <div class="input-group-prepend">
+                  <span class="input-group-text">Max.</span>
+                </div>
+                <input type="number" class="form-control" v-model="scan.max_z" step="0.01">
+                <div class="input-group-append">
+                  <span class="input-group-text">mm</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="form-group row">
             <label for="analyzer" class="col-sm-3 col-form-label">Spectrum analyzer</label>
             <div class="col-sm-3">
@@ -105,7 +168,13 @@
           analyzer: undefined,  // it is very important to declare those properties! (for change detection)
           probe: undefined,
           min_frequency_unit: 'GHz',
-          max_frequency_unit: 'GHz'
+          max_frequency_unit: 'GHz',
+          min_x: 0,
+          min_y: 0,
+          min_z: 0,
+          max_x: 210,
+          max_y: 290,
+          max_z: 100
         },
         analyzers: [],
         probes: [],
