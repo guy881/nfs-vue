@@ -16,7 +16,8 @@
               <input class="form-control" id="name" v-model="scan.name">
             </div>
             <div class="col-sm-3 text-center">
-              <button type="button" class="btn btn-outline-info" @click="saveScan(scan)">Import PCB layout</button>
+              <span class="btn btn-outline-info" data-toggle="modal"
+                    data-target="#fileUploadModal">Import PCB layout</span>
             </div>
           </div>
           <div class="form-group row">
@@ -149,15 +150,44 @@
         </form>
       </div>
     </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="fileUploadModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Import PCB layout</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Cancel">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <!--<form :action="fileUploadURL" class="dropzone" id="fileDropzone" enctype="multipart/form-data">-->
+            <!--<input type="file" ref="layoutFile" name="file" v-on:change="onFileChange" hidden>-->
+            <!--</form>-->
+            <vue-dropzone ref="myVueDropzone" id="dropzone" :options="dropzoneOptions"></vue-dropzone>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-  import {HTTP} from '../http'
+  import {host, HTTP} from '../http'
+  import vue2Dropzone from 'vue2-dropzone'
+  import 'vue2-dropzone/dist/vue2Dropzone.css'
   // import _ from 'lodash'
 
   export default {
     name: 'Scanning',
+    components: {
+      vueDropzone: vue2Dropzone
+    },
     data: function () {
       return {
         scan: {
@@ -174,7 +204,8 @@
           min_z: 0,
           max_x: 210,
           max_y: 290,
-          max_z: 100
+          max_z: 100,
+          pcb_filename: ''
         },
         analyzers: [],
         probes: [],
@@ -184,6 +215,16 @@
           z: 'Z-variable'
         },
         freqUnits: ['kHz', 'MHz', 'GHz'],
+        dropzoneOptions: {
+          paramName: 'file',
+          url: host + 'file-upload',
+          maxFiles: 1,
+          init: function () {
+            this.on('success', function (file, response) {
+              this.data.scan.pcb_filename = response
+            })
+          }
+        },
         errors: null
       }
     },
@@ -215,6 +256,8 @@
       },
       saveScan: function (scan) {
         console.log(scan)
+        var references = this.$refs
+        console.log(references)
         const url = scan.id ? 'scans/' + scan.id : 'scans/'
         const promise = scan.id ? HTTP.put(url, scan) : HTTP.post(url, scan)
         promise
@@ -259,6 +302,9 @@
           .catch(error => {
             console.log(error)
           })
+      },
+      onFileChange: function (e) {
+        console.log(e.target.files)
       }
     }
   }
