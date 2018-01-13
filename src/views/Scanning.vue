@@ -163,13 +163,10 @@
             </button>
           </div>
           <div class="modal-body">
-            <!--<form :action="fileUploadURL" class="dropzone" id="fileDropzone" enctype="multipart/form-data">-->
-            <!--<input type="file" ref="layoutFile" name="file" v-on:change="onFileChange" hidden>-->
-            <!--</form>-->
-            <vue-dropzone ref="myVueDropzone" id="dropzone" :options="dropzoneOptions"></vue-dropzone>
+            <vue-dropzone @vdropzone-success="fileUploaded" ref="myVueDropzone" id="dropzone" :options="dropzoneOptions"></vue-dropzone>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary">Save</button>
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Done</button>
           </div>
         </div>
       </div>
@@ -218,12 +215,7 @@
         dropzoneOptions: {
           paramName: 'file',
           url: host + 'file-upload',
-          maxFiles: 1,
-          init: function () {
-            this.on('success', function (file, response) {
-              this.data.scan.pcb_filename = response
-            })
-          }
+          maxFiles: 1
         },
         errors: null
       }
@@ -263,7 +255,7 @@
         promise
           .then(response => {
             console.log(response)
-            this.$router.push({name: 'home'})
+            this.$router.push({name: 'scans'})
           })
           .catch(error => {
             const errors = error.response.data.errors
@@ -303,8 +295,8 @@
             console.log(error)
           })
       },
-      onFileChange: function (e) {
-        console.log(e.target.files)
+      fileUploaded: function (file, response) {
+        this.scan.pcb_filename = response
       }
     }
   }
