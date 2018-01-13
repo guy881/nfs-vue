@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Scanning from '@/views/Scanning'
+import ScanningProgress from '@/views/ScanningProgress'
+import ScanningResult from '@/views/ScanningResult'
 import ScanHistory from '@/views/ScanHistory'
 import Hardware from '@/views/Hardware'
 import Analyzer from '@/views/Analyzer'
@@ -15,6 +17,16 @@ export default new Router({
       path: '/',
       name: 'home',
       component: Scanning
+    },
+    {
+      path: '/scanning/:id/progress',
+      name: 'scanning_progress',
+      component: ScanningProgress
+    },
+    {
+      path: '/scanning/:id/result',
+      name: 'scanning_result',
+      component: ScanningResult
     },
     {
       path: '/scans/',

@@ -255,7 +255,8 @@
         promise
           .then(response => {
             console.log(response)
-            this.$router.push({name: 'scans'})
+            const id = response.data.id
+            this.$router.push({name: 'scanning_progress', params: {id: id}})
           })
           .catch(error => {
             const errors = error.response.data.errors
