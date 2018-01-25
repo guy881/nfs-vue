@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="card border-secondary mb-3 mt-3">
-      <div class="card-header bg-info text-white">Scanning results</div>
+      <div class="card-header bg-info text-white">Scanning result ({{ scan.name }})</div>
       <div class="card-body">
         <div class="alert alert-danger" role="alert" v-if="errors">
           <ul>
@@ -9,17 +9,16 @@
           </ul>
         </div>
         <div class="text-center">
-          <h3>{{ scan.name }} result:</h3>
           <div id="graph" ref="graph"></div>
           <div id="graph-control" v-if="result.ready">
             <p>Frequency range:</p>
-            <vue-slider ref="frequencySlider" v-model="currentFrequency" :min="minFrequency"
-                        :max="maxFrequency" :dot-size="20" :height="8" :interval="frequencyStep"
+            <vue-slider ref="frequencySlider" v-model="currentFrequency" :min="minFrequency" :max="maxFrequency"
+                        :interval="frequencyStep" :dot-size="20" :height="8"
                         :tooltip-dir="['top', 'bottom']"></vue-slider>
             <div v-if="scan.z_availabe">
               <p class="mt-5">Z index:</p>
-              <vue-slider ref="zSlider" v-model="currentZ" :dot-size="20" :height="8" :interval="zStep"
-                          :tooltip-dir="['top', 'bottom']"></vue-slider>
+              <vue-slider ref="zSlider" v-model="currentZ" :min="minZ" :max="maxZ"
+                          :interval="zStep" :dot-size="20" :height="8" :tooltip-dir="['top', 'bottom']"></vue-slider>
             </div>
             <button class="btn btn-primary mt-5" @click="updateVisualization">Update</button>
           </div>
@@ -75,6 +74,12 @@
           return Math.round((this.result.f[1] - this.result.f[0]) * 10000) / 10000
         } else return 0.1
       },
+      minZ: function () {
+        return this.result.z[0]
+      },
+      maxZ: function () {
+        return this.result.z[this.result.z.length - 1]
+      },
       zStep: function () {
         if (this.result.z.length > 1) {
           return Math.round((this.result.z[1] - this.result.z[0]) * 10000) / 10000
@@ -83,9 +88,6 @@
     },
     created: function () {
       this.getScan()
-    },
-    mounted: function () { // DOM ready
-      // window.arange = arange
     },
     methods: {
       getScan: function () {
@@ -109,11 +111,13 @@
         return a.map((x) => {
           return x.map((y) => {
             return y.reduce((zSum, z, zIndex) => {
-              return z.reduce((fSum, f, fIndex) => {
-                if (!('fStartIndex' in params) || (fIndex >= params.fStartIndex && fIndex <= params.fEndIndex)) {
-                  return fSum + f
-                } else return fSum
-              }, zSum)
+              if (!('zStartIndex' in params) || (zIndex >= params.zStartIndex && zIndex <= params.zEndIndex)) {
+                return z.reduce((fSum, f, fIndex) => {
+                  if (!('fStartIndex' in params) || (fIndex >= params.fStartIndex && fIndex <= params.fEndIndex)) {
+                    return fSum + f
+                  } else return fSum
+                }, zSum)
+              } else return zSum
             }, 0)
           })
         })
@@ -128,15 +132,10 @@
             this.result.f = JSON.parse(response.data.f)
             this.result.e = JSON.parse(response.data.e)
             this.currentFrequency = [this.minFrequency, this.maxFrequency]
-            console.log(this.currentFrequency, this.frequencyStep)
-            console.log(this.result.f)
-            window.f = this.result.f
-            this.currentZ = [this.scan.min_z, this.scan.max_z]
+            this.currentZ = [this.minZ, this.maxZ]
             // this.result.e = array(JSON.parse(response.data.e))
-            console.log(this.frequencyStep)
             console.log(this.result.e)
             this.result.reduced = this.reduce4Dto2D({a: this.result.e})
-            console.log(this.result.reduced)
             window.reduced = this.result.reduced
             this.createVisualization(this.result.reduced)
           })
@@ -159,22 +158,31 @@
         const layout = {
           title: 'Accumulated power of near field',
           autosize: false,
-          width: '900',
+          width: 1030,
           height: 800
         }
         Plotly.newPlot('graph', data, layout)
         this.result.ready = true
       },
       updateVisualization: function () {
+        // get frequency from slider
         const minFreq = this.currentFrequency[0]
         const maxFreq = this.currentFrequency[1]
         const fStartIndex = this.result.f.indexOf(minFreq)
         const fEndIndex = this.result.f.indexOf(maxFreq)
-        console.log(fStartIndex, fEndIndex)
+        // get z-index from slider
+        const minZ = this.currentZ[0]
+        const maxZ = this.currentZ[1]
+        const zStartIndex = this.result.z.indexOf(minZ)
+        const zEndIndex = this.result.z.indexOf(maxZ)
+        // some space
+        // more breathe
         const reduced = this.reduce4Dto2D({
           a: this.result.e,
           fStartIndex: fStartIndex,
-          fEndIndex: fEndIndex
+          fEndIndex: fEndIndex,
+          zStartIndex: zStartIndex,
+          zEndIndex: zEndIndex
         })
         console.log(reduced)
         Plotly.deleteTraces('graph', 0)
