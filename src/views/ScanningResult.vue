@@ -93,7 +93,7 @@
             if (!this.scan.pk) {
               this.scan = response.data
               if (this.scan.result) {
-                this.displayResults()
+                this.getScanResult()
               }
             }
           })
@@ -120,7 +120,7 @@
           })
         })
       },
-      displayResults: function () {
+      getScanResult: function () {
         const url = host + 'results/' + this.scan.result
         HTTP.get(url)
           .then(response => {
@@ -133,6 +133,7 @@
             this.currentZ = [this.minZ, this.maxZ]
             // this.result.e = array(JSON.parse(response.data.e))
             console.log(this.result.e)
+            console.log(this.result.z)
             this.result.reduced = this.reduce4Dto2D({matrix: this.result.e})
             window.reduced = this.result.reduced
             this.createVisualization(this.result.reduced)
