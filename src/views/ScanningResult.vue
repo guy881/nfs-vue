@@ -3,11 +3,7 @@
     <div class="card border-secondary mb-3 mt-3">
       <div class="card-header bg-info text-white">Scanning result ({{ scan.name }})</div>
       <div class="card-body">
-        <div class="alert alert-danger" role="alert" v-if="errors">
-          <ul>
-            <li v-for="(error, field) in errors">{{ field }}: {{ error }}</li>
-          </ul>
-        </div>
+        <spinner size="big" message="Wait for visualization" v-show="!result.ready"></spinner>
         <div class="text-center">
           <div id="graph" ref="graph"></div>
           <div id="graph-control" v-if="result.ready">
@@ -33,13 +29,12 @@
   /* eslint-disable no-undef */
   import {host, HTTP} from '../http'
   import vueSlider from 'vue-slider-component'
+  import Spinner from 'vue-simple-spinner'
   // import {array, arange} from 'numjs'
 
   export default {
     name: 'ScanningResult',
-    components: {
-      vueSlider
-    },
+    components: { vueSlider, Spinner },
     data: function () {
       return {
         scan: {
@@ -107,13 +102,16 @@
           })
       },
       reduce4Dto2D: function (params) {
-        const a = params.a
-        return a.map((x) => {
+        // reduce 4 dimensional array to 2 dimensional by doing sum on third and fourth dimension
+        // optionally filter by z index (third dimension) or by frequency (fourth dimension)
+        const isBetween = (index, startIndex, endIndex) => { return index >= startIndex && index <= endIndex }
+        const matrix = params.matrix
+        return matrix.map((x) => {
           return x.map((y) => {
             return y.reduce((zSum, z, zIndex) => {
-              if (!('zStartIndex' in params) || (zIndex >= params.zStartIndex && zIndex <= params.zEndIndex)) {
+              if (!('zStartIndex' in params) || isBetween(zIndex, params.zStartIndex, params.zEndIndex)) {
                 return z.reduce((fSum, f, fIndex) => {
-                  if (!('fStartIndex' in params) || (fIndex >= params.fStartIndex && fIndex <= params.fEndIndex)) {
+                  if (!('fStartIndex' in params) || isBetween(fIndex, params.fStartIndex, params.fEndIndex)) {
                     return fSum + f
                   } else return fSum
                 }, zSum)
@@ -135,7 +133,7 @@
             this.currentZ = [this.minZ, this.maxZ]
             // this.result.e = array(JSON.parse(response.data.e))
             console.log(this.result.e)
-            this.result.reduced = this.reduce4Dto2D({a: this.result.e})
+            this.result.reduced = this.reduce4Dto2D({matrix: this.result.e})
             window.reduced = this.result.reduced
             this.createVisualization(this.result.reduced)
           })
@@ -165,6 +163,8 @@
         this.result.ready = true
       },
       updateVisualization: function () {
+        this.result.ready = false
+        console.log(this.result.ready)
         // get frequency from slider
         const minFreq = this.currentFrequency[0]
         const maxFreq = this.currentFrequency[1]
@@ -178,7 +178,7 @@
         // some space
         // more breathe
         const reduced = this.reduce4Dto2D({
-          a: this.result.e,
+          matrix: this.result.e,
           fStartIndex: fStartIndex,
           fEndIndex: fEndIndex,
           zStartIndex: zStartIndex,
@@ -188,6 +188,7 @@
         Plotly.deleteTraces('graph', 0)
         Plotly.addTraces('graph', this.dataTrace(reduced))
         console.log('yeah!')
+        this.result.ready = true
       }
     }
   }
