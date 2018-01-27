@@ -92,7 +92,7 @@
             console.log(response.data)
             if (!this.scan.pk) {
               this.scan = response.data
-              if (this.scan.result) {
+              if (!this.scan.result) {
                 this.getScanResult()
               }
             }
@@ -121,14 +121,15 @@
         })
       },
       getScanResult: function () {
-        const url = host + 'results/' + this.scan.result
+        // const url = host + 'results/' + this.scan.result
+        const url = host + 'matresults/1'
         HTTP.get(url)
           .then(response => {
-            this.result.x = JSON.parse(response.data.x)
-            this.result.y = JSON.parse(response.data.y)
-            this.result.z = JSON.parse(response.data.z)
-            this.result.f = JSON.parse(response.data.f)
-            this.result.e = JSON.parse(response.data.e)
+            this.result.x = response.data.x
+            this.result.y = response.data.y
+            this.result.z = response.data.z
+            this.result.f = response.data.f
+            this.result.e = response.data.e
             this.currentFrequency = [this.minFrequency, this.maxFrequency]
             this.currentZ = [this.minZ, this.maxZ]
             // this.result.e = array(JSON.parse(response.data.e))
