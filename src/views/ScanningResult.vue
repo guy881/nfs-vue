@@ -4,17 +4,16 @@
       <div class="card-header bg-info text-white">Scanning result ({{ scan.name }})</div>
       <div class="card-body">
         <spinner size="big" message="Wait for visualization" v-show="!result.ready"></spinner>
-        <div class="text-center">
+        <div class="text-center" v-show="result.ready">
           <div id="graph" ref="graph"></div>
           <div id="graph-control" v-if="result.ready">
             <p>Frequency range:</p>
-            <vue-slider ref="frequencySlider" v-model="currentFrequency" :min="minFrequency" :max="maxFrequency"
-                        :interval="frequencyStep" :dot-size="20" :height="8"
-                        :tooltip-dir="['top', 'bottom']"></vue-slider>
+            <vue-slider ref="frequencySlider" v-model="currentFrequency" :data="this.result.f" :dot-size="20"
+                        :height="8" :tooltip-dir="['top', 'bottom']"></vue-slider>
             <div v-if="scan.z_availabe">
               <p class="mt-5">Z index:</p>
-              <vue-slider ref="zSlider" v-model="currentZ" :min="minZ" :max="maxZ"
-                          :interval="zStep" :dot-size="20" :height="8" :tooltip-dir="['top', 'bottom']"></vue-slider>
+              <vue-slider ref="zSlider" v-model="currentZ" :data="this.result.z" :dot-size="20" :height="8"
+                          :tooltip-dir="['top', 'bottom']"></vue-slider>
             </div>
             <button class="btn btn-primary mt-5" @click="updateVisualization">Update</button>
           </div>
@@ -64,21 +63,11 @@
       maxFrequency: function () {
         return this.result.f[this.result.f.length - 1]
       },
-      frequencyStep: function () {
-        if (this.result.f.length > 1) {
-          return Math.round((this.result.f[1] - this.result.f[0]) * 10000) / 10000
-        } else return 0.1
-      },
       minZ: function () {
         return this.result.z[0]
       },
       maxZ: function () {
         return this.result.z[this.result.z.length - 1]
-      },
-      zStep: function () {
-        if (this.result.z.length > 1) {
-          return Math.round((this.result.z[1] - this.result.z[0]) * 10000) / 10000
-        } else return 0.1
       }
     },
     created: function () {
@@ -92,7 +81,7 @@
             console.log(response.data)
             if (!this.scan.pk) {
               this.scan = response.data
-              if (!this.scan.result) {
+              if (this.scan.result) {
                 this.getScanResult()
               }
             }
@@ -102,20 +91,17 @@
           })
       },
       getScanResult: function () {
-        // const url = host + 'results/' + this.scan.result
-        const url = host + 'mtresults/1'
+        const roundFloat = (f) => { return Math.round(f * 100) / 100 }
+        const url = host + 'mtresults/' + this.scan.result
         HTTP.get(url)
           .then(response => {
             this.result.x = response.data.x
             this.result.y = response.data.y
             this.result.z = response.data.z
-            this.result.f = response.data.f
+            this.result.f = response.data.f.map(f => roundFloat(f))
             this.result.reduced = response.data.e
             this.currentFrequency = [this.minFrequency, this.maxFrequency]
             this.currentZ = [this.minZ, this.maxZ]
-            // this.result.e = array(JSON.parse(response.data.e))
-            console.log(this.result.z)
-            window.reduced = this.result.reduced
             this.createVisualization(this.result.reduced)
           })
           .catch(error => {
@@ -138,38 +124,43 @@
           title: 'Accumulated power of near field',
           autosize: false,
           width: 1030,
-          height: 800
+          height: 800,
+          scene: {zaxis: {title: 'E'}}
         }
         Plotly.newPlot('graph', data, layout)
         this.result.ready = true
       },
       updateVisualization: function () {
         this.result.ready = false
-        console.log(this.result.ready)
         // get frequency from slider
-        // const minFreq = this.currentFrequency[0]
-        // const maxFreq = this.currentFrequency[1]
-        // const fStartIndex = this.result.f.indexOf(minFreq)
-        // const fEndIndex = this.result.f.indexOf(maxFreq)
+        const minFreq = this.currentFrequency[0]
+        const maxFreq = this.currentFrequency[1]
+        const fStartIndex = this.result.f.indexOf(minFreq)
+        const fEndIndex = this.result.f.indexOf(maxFreq)
         // get z-index from slider
-        // const minZ = this.currentZ[0]
-        // const maxZ = this.currentZ[1]
-        // const zStartIndex = this.result.z.indexOf(minZ)
-        // const zEndIndex = this.result.z.indexOf(maxZ)
+        const minZ = this.currentZ[0]
+        const maxZ = this.currentZ[1]
+        const zStartIndex = this.result.z.indexOf(minZ)
+        const zEndIndex = this.result.z.indexOf(maxZ)
         // some space
         // more breathe
-        // const reduced = this.reduce4Dto2D({
-        //   matrix: this.result.e,
-        //   fStartIndex: fStartIndex,
-        //   fEndIndex: fEndIndex,
-        //   zStartIndex: zStartIndex,
-        //   zEndIndex: zEndIndex
-        // })
-        console.log(reduced)
-        Plotly.deleteTraces('graph', 0)
-        Plotly.addTraces('graph', this.dataTrace(reduced))
-        console.log('yeah!')
-        this.result.ready = true
+        const url = new URL(host + 'mtresults/' + this.scan.result)
+        const params = {
+          sf: fStartIndex,
+          ef: fEndIndex,
+          sz: zStartIndex,
+          ez: zEndIndex
+        }
+        Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
+        HTTP.get(url)
+          .then(response => {
+            const reduced = response.data.e
+            console.log(reduced)
+            Plotly.deleteTraces('graph', 0)
+            Plotly.addTraces('graph', this.dataTrace(reduced))
+            console.log('yeah!')
+            this.result.ready = true
+          })
       }
     }
   }
