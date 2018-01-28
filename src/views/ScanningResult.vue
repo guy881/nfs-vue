@@ -101,41 +101,20 @@
             console.log(error)
           })
       },
-      reduce4Dto2D: function (params) {
-        // reduce 4 dimensional array to 2 dimensional by doing sum on third and fourth dimension
-        // optionally filter by z index (third dimension) or by frequency (fourth dimension)
-        const isBetween = (index, startIndex, endIndex) => { return index >= startIndex && index <= endIndex }
-        const matrix = params.matrix
-        return matrix.map((x) => {
-          return x.map((y) => {
-            return y.reduce((zSum, z, zIndex) => {
-              if (!('zStartIndex' in params) || isBetween(zIndex, params.zStartIndex, params.zEndIndex)) {
-                return z.reduce((fSum, f, fIndex) => {
-                  if (!('fStartIndex' in params) || isBetween(fIndex, params.fStartIndex, params.fEndIndex)) {
-                    return fSum + f
-                  } else return fSum
-                }, zSum)
-              } else return zSum
-            }, 0)
-          })
-        })
-      },
       getScanResult: function () {
         // const url = host + 'results/' + this.scan.result
-        const url = host + 'matresults/1'
+        const url = host + 'mtresults/1'
         HTTP.get(url)
           .then(response => {
             this.result.x = response.data.x
             this.result.y = response.data.y
             this.result.z = response.data.z
             this.result.f = response.data.f
-            this.result.e = response.data.e
+            this.result.reduced = response.data.e
             this.currentFrequency = [this.minFrequency, this.maxFrequency]
             this.currentZ = [this.minZ, this.maxZ]
             // this.result.e = array(JSON.parse(response.data.e))
-            console.log(this.result.e)
             console.log(this.result.z)
-            this.result.reduced = this.reduce4Dto2D({matrix: this.result.e})
             window.reduced = this.result.reduced
             this.createVisualization(this.result.reduced)
           })
@@ -168,24 +147,24 @@
         this.result.ready = false
         console.log(this.result.ready)
         // get frequency from slider
-        const minFreq = this.currentFrequency[0]
-        const maxFreq = this.currentFrequency[1]
-        const fStartIndex = this.result.f.indexOf(minFreq)
-        const fEndIndex = this.result.f.indexOf(maxFreq)
+        // const minFreq = this.currentFrequency[0]
+        // const maxFreq = this.currentFrequency[1]
+        // const fStartIndex = this.result.f.indexOf(minFreq)
+        // const fEndIndex = this.result.f.indexOf(maxFreq)
         // get z-index from slider
-        const minZ = this.currentZ[0]
-        const maxZ = this.currentZ[1]
-        const zStartIndex = this.result.z.indexOf(minZ)
-        const zEndIndex = this.result.z.indexOf(maxZ)
+        // const minZ = this.currentZ[0]
+        // const maxZ = this.currentZ[1]
+        // const zStartIndex = this.result.z.indexOf(minZ)
+        // const zEndIndex = this.result.z.indexOf(maxZ)
         // some space
         // more breathe
-        const reduced = this.reduce4Dto2D({
-          matrix: this.result.e,
-          fStartIndex: fStartIndex,
-          fEndIndex: fEndIndex,
-          zStartIndex: zStartIndex,
-          zEndIndex: zEndIndex
-        })
+        // const reduced = this.reduce4Dto2D({
+        //   matrix: this.result.e,
+        //   fStartIndex: fStartIndex,
+        //   fEndIndex: fEndIndex,
+        //   zStartIndex: zStartIndex,
+        //   zEndIndex: zEndIndex
+        // })
         console.log(reduced)
         Plotly.deleteTraces('graph', 0)
         Plotly.addTraces('graph', this.dataTrace(reduced))

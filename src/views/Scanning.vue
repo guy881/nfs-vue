@@ -103,7 +103,7 @@
             <label for="analyzer" class="col-sm-3 col-form-label">Spectrum analyzer</label>
             <div class="col-sm-3">
               <select id="analyzer" class="custom-select pr-5" v-model="scan.analyzer">
-                <option v-for="analyzer in analyzers" v-bind:value="analyzer.id">{{ analyzer.name }}</option>
+                <option v-for="analyzer in analyzers" v-bind:value="analyzer.id">{{ analyzer.name }} - {{ analyzer.model }}</option>
               </select>
             </div>
             <div class="col-sm-2">
@@ -114,7 +114,7 @@
             <label for="probe" class="col-sm-3 col-form-label">Field probe</label>
             <div class="col-sm-3">
               <select id="probe" class="custom-select pr-5" v-model="scan.probe">
-                <option v-for="probe in probes" v-bind:value="probe.id">{{ probe.name }}</option>
+                <option v-for="probe in probes" v-bind:value="probe.id">{{ probe.name }} - type {{ probe.kind }} </option>
               </select>
             </div>
             <div class="col-sm-2">

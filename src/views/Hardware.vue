@@ -22,7 +22,6 @@
                 <td>{{ analyzer.name }}</td>
                 <td>{{ analyzer.model }}</td>
                 <td>{{ analyzer.freq_range }}</td>
-                <!--<td><span v-bind:class="['badge', 'badge-pill', analyzer.default ? 'badge-primary' : 'badge-secondary']">{{ analyzer.default }}</span></td>-->
                 <td><i class="fas fa-check-circle ml-3 text-info" v-if="analyzer.default"></i></td>
                 <td>
                   <router-link :to="{ name: 'analyzer', params: {id: analyzer.id} }"
