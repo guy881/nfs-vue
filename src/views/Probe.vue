@@ -50,7 +50,8 @@
           <div class="form-group row">
             <label for="correction_factor" class="col-sm-3 col-form-label">Correction factor</label>
             <div class="col-sm-9">
-              <input type="number" class="form-control" id="correction_factor" v-model="probe.correction_factor">
+              <span class="btn btn-outline-info" data-toggle="modal"
+                    data-target="#fileUploadModal">Import correction factor file</span>
             </div>
           </div>
           <label class="custom-control custom-checkbox">
@@ -63,15 +64,39 @@
         </form>
       </div>
     </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="fileUploadModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Import correction factor file</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Cancel">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <vue-dropzone @vdropzone-success="fileUploaded" ref="myVueDropzone" id="dropzone" :options="dropzoneOptions"></vue-dropzone>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Done</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-  import {HTTP} from '../http'
-  // import _ from 'lodash'
+  import {host, HTTP} from '../http'
+  import vue2Dropzone from 'vue2-dropzone'
 
   export default {
     name: 'Probe',
+    components: {
+      vueDropzone: vue2Dropzone
+    },
     data: function () {
       return {
         probe: {
@@ -80,7 +105,12 @@
         },
         probeKinds: {e: 'E', h: 'H'},
         errors: null,
-        freqUnits: ['kHz', 'MHz', 'GHz']
+        freqUnits: ['kHz', 'MHz', 'GHz'],
+        dropzoneOptions: {
+          paramName: 'file',
+          url: host + 'file-upload',
+          maxFiles: 1
+        }
       }
     },
     created: function () {
@@ -111,6 +141,9 @@
             console.log(errors)
             this.errors = errors
           })
+      },
+      fileUploaded: function (file, response) {
+        this.probe.correction_factor = response
       }
     }
   }
